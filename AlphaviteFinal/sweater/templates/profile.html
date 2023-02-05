@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Your Profile
+{% endblock %}
+
+{% block body %}
+    <div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <img src = "../static/img/profile_img.jpg">
+                <h2>User name: {{namepi}}</h2>
+                <h2>User email: {{emailpi}}</h2>
+        </div>
+    </div>
+    <form action="/logout" method="get">
+        <div>
+            <button type="submit" id="logout_button">Logout</button>
+        </div>
+    </form>
+{% endblock %}
