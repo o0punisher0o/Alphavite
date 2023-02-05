@@ -5,5 +5,13 @@ NFT Founder Result
 {% endblock %}
 
 {% block body %}
-    <h3>{{address}}</h3>
+    <h1>There is no such word.
+        Maybe you want to add it to the DataBase?</h1>
+
+    <section class="form" >
+        <form action="/add" method="post"><h1>Enter word</h1>
+        <input type="text" name="word"><br>
+        <input type="text" name="definition"><br>
+        <button type="submit">Find</button></form>
+    </section>
 {% endblock %}

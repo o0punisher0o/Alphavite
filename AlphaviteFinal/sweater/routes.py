@@ -17,7 +17,22 @@ userOne = User(False, 'username', 'email', '')
 @app.route("/founder")
 def founder():
     if userOne.loggined:
-        return render_template("nft.html")
+        cur.execute(f"""SELECT * from words ORDER BY words ASC""")
+        answer = cur.fetchall()
+        if answer!=[]:
+            x = ''
+            y = ''
+            for row in answer:
+                x += row[1]
+                x += '\n\n\n'
+                y += row[2]
+                y += '\n\n\n'
+                print('word - ', row[1])
+                print('definition - ', row[2])
+
+            return render_template('nft.html', word=x, definition=y)
+        else:
+            return render_template("nft.html")
     else:
         return redirect(url_for('auth'))
 
@@ -25,26 +40,42 @@ def founder():
 @app.route("/res", methods=['POST', "GET"])
 def result():
     output = request.form.to_dict()
-    address = output["address"]
-    url = 'https://solana-gateway.moralis.io/nft/mainnet/' + address + '/metadata'
-    headers = {
-        "accept": "application/json",
-        "X-API-Key": "SWnpmagdLrYt67aFhsaBRRzoubD59cdQkydkZLeljvVREBpWGmpLktfRLZXcvudp"
-    }
-    response = requests.get(url, headers=headers)
-    cur.execute("""SELECT * from nft WHERE nft_address = %s""", (address,))
+    word = output["word"]
+    cur.execute(f"""SELECT * from words WHERE word LIKE '{word}%' ORDER BY words ASC""")
+    answer = cur.fetchall()
+    if answer!=[]:
+        x = ''
+        y = ''
+        for row in answer:
+            x += row[1]
+            x += '\n\n\n'
+            y += row[2]
+            y += '\n\n\n'
+            print('word - ', row[1])
+            print('definition - ', row[2])
+
+        return render_template('res2.html', word=x, definition=y)
+    else:
+        return render_template('res.html')
+
+
+@app.route("/add", methods=['POST', "GET"])
+def add():
+    output = request.form.to_dict()
+    word = output["word"]
+    definition = output["definition"]
+    cur.execute(f"""SELECT * from words WHERE word = '{word}'""")
     answer = cur.fetchall()
     if answer!=[]:
         for row in answer:
-            print('nft_address - ', row[0])
-            print('nft_info - ', row[1])
-            print('fromDB')
-        return render_template('res2.html', address=response.text)
+            print('this word is already in database')
+        return render_template('res2.html')
     else:
-        cur.execute("""INSERT INTO nft (nft_address, nft_info) VALUES (%s, %s);""", (address, response.text))
+        cur.execute("""INSERT INTO words (word, definition) VALUES (%s, %s);""", (word, definition))
         conn.commit()
         print('added to db')
-        return render_template('res.html', address=response.text)
+        return render_template('addres.html')
+
 
 
 @app.route('/')
@@ -77,15 +108,14 @@ def sign_res():
     name = output["namereg"]
     email = output["emailreg"]
     password = output["passreg"]
-    #hash_password = generate_password_hash(password, method='sha256')   hash_password
     userOne.SetPass(password)
     h_password1 = userOne.h_password
-    cur.execute("""SELECT * from users WHERE user_name = %s""", (name,))
+    cur.execute("""SELECT * from users WHERE username = %s""", (name,))
     answer1 = cur.fetchall()
     if answer1!=[]:
         return render_template("sign_res.html", answer381="User with this name is already registered")
     else:
-        cur.execute("""INSERT INTO users (user_name, user_email, user_password) VALUES (%s, %s, %s);""", (name, email, h_password1))
+        cur.execute("""INSERT INTO users (username, email, password) VALUES (%s, %s, %s);""", (name, email, h_password1))
         conn.commit()
         return render_template('sign_res.html', answer381="registration completed successfully")
 
@@ -97,10 +127,10 @@ def log():
         name = output["namelog"]
         password = output["passlog"]
         #hash_password = generate_password_hash(password, method='sha256')
-        cur.execute("""SELECT user_email FROM users WHERE user_name = %s""", (name,))
+        cur.execute("""SELECT email FROM users WHERE username = %s""", (name,))
         answer17 = cur.fetchall()
         if answer17 != []:
-            cur.execute("""SELECT user_password FROM users WHERE user_name = %s""", (name,))
+            cur.execute("""SELECT password FROM users WHERE username = %s""", (name,))
             answer16 = cur.fetchall()
             if userOne.VerifyPass(answer16[0][0], password):
                 userOne.SetUsername(name)
