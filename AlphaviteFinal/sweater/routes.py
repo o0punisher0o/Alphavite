@@ -74,7 +74,7 @@ def add():
         cur.execute("""INSERT INTO words (word, definition) VALUES (%s, %s);""", (word, definition))
         conn.commit()
         print('added to db')
-        return render_template('addres.html')
+        return render_template('addres.html', word=word, definition=definition)
 
 
 
