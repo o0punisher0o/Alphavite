@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Dictionaty
+Dictionary
 {% endblock %}
 
 {% block body %}
@@ -12,13 +12,12 @@ Dictionaty
 </section>
 
     <table>
-    <tr>
-        <td>Word</td>
-        <td>Definition</td>
-      </tr>
       <tr>
-        <td>{{word}}</td>
-        <td>{{definition}}</td>
+        {% for i in range(max) %}
+            <div>
+              {{word[i]}} - <b>{{definition[i]}}</b>
+            </div>
+        {% endfor %}
       </tr>
     </table>
 {% endblock %}

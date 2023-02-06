@@ -1,22 +1,16 @@
 {% extends 'base.html' %}
 
 {% block title %}
-NFT Founder Result
+Result
 {% endblock %}
 
 {% block body %}
     <table>
-    <tr>
-        <td>Word</td>
-        <td>Definition</td>
-      </tr>
-    <tr>
-        <td>{{word}}</td>
-        <td>{{definition}}</td>
-      </tr>
+        {% for i in range(max) %}
+            <div>
+              {{word[i]}} - <b>{{definition[i]}}</b>
+            </div>
+        {% endfor %}
     </table>
-    <section class="form" >
-        <form action="/add" method="post">
-        <button type="submit">Back</button></form>
-    </section>
+    <a class="me-3 py-2 text-dark text-decoration-none" href="/founder">Back</a>
 {% endblock %}

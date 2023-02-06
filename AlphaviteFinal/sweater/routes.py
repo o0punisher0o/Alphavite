@@ -20,17 +20,17 @@ def founder():
         cur.execute(f"""SELECT * from words ORDER BY words ASC""")
         answer = cur.fetchall()
         if answer != []:
-            x = ''
-            y = ''
+            word = []
+            definition = []
             for row in answer:
-                x += row[1]
-                x += '\n\n\n'
-                y += row[2]
-                y += '\n\n\n'
+                word.append(row[1])
+                definition.append(row[2])
                 print('word - ', row[1])
                 print('definition - ', row[2])
-
-            return render_template('nft.html', word=x, definition=y)
+            max = len(word)
+            word = sorted(word)
+            definition = sorted(definition)
+            return render_template('nft.html', word=word, definition=definition, max=max)
         else:
             return render_template("nft.html")
     else:
@@ -44,19 +44,20 @@ def result():
     cur.execute(f"""SELECT * from words WHERE word LIKE '{word}%' ORDER BY words ASC""")
     answer = cur.fetchall()
     if answer != []:
-        x = ''
-        y = ''
+        word = []
+        definition = []
         for row in answer:
-            x += row[1]
-            x += '\n\n\n'
-            y += row[2]
-            y += '\n\n\n'
+            word.append(row[1])
+            definition.append(row[2])
             print('word - ', row[1])
             print('definition - ', row[2])
-
-        return render_template('res2.html', word=x, definition=y)
+        max = len(word)
+        word = sorted(word)
+        definition = sorted(definition)
+        return render_template('res2.html', word=word, definition=definition, max=max)
     else:
-        return render_template('res.html')
+        tekst = 'There is no such word.\nMaybe you want to add it to the DataBase?'
+        return render_template('res.html', tekst=tekst)
 
 
 @app.route("/add", methods=['POST', "GET"])
@@ -66,15 +67,21 @@ def add():
     definition = output["definition"]
     cur.execute(f"""SELECT * from words WHERE word = '{word}'""")
     answer = cur.fetchall()
-    if answer!=[]:
+    if answer != []:
         for row in answer:
             print('this word is already in database')
-        return render_template('res2.html')
+            tekst = 'This word is already in database'
+        return render_template('res.html', tekst=tekst)
     else:
-        cur.execute("""INSERT INTO words (word, definition) VALUES (%s, %s);""", (word, definition))
-        conn.commit()
-        print('added to db')
-        return render_template('addres.html', word=word, definition=definition)
+        if word != '' and definition != '':
+            cur.execute("""INSERT INTO words (word, definition) VALUES (%s, %s);""", (word, definition))
+            conn.commit()
+            print('added to db')
+            tekst = 'There is no such word.\nMaybe you want to add it to the DataBase?'
+            return render_template('addres.html', word=word, definition=definition, tekst=tekst)
+        else:
+            tekst = 'Try again'
+            return render_template('res.html', tekst=tekst)
 
 
 
