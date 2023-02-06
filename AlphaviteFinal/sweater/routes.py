@@ -19,7 +19,7 @@ def founder():
     if userOne.loggined:
         cur.execute(f"""SELECT * from words ORDER BY words ASC""")
         answer = cur.fetchall()
-        if answer!=[]:
+        if answer != []:
             x = ''
             y = ''
             for row in answer:
@@ -43,7 +43,7 @@ def result():
     word = output["word"]
     cur.execute(f"""SELECT * from words WHERE word LIKE '{word}%' ORDER BY words ASC""")
     answer = cur.fetchall()
-    if answer!=[]:
+    if answer != []:
         x = ''
         y = ''
         for row in answer:
